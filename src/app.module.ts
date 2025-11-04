@@ -6,6 +6,9 @@ import { LzstockController } from './lzstock/lzstock.controller';
 import { LzstockService } from './lzstock/lzstock.service';
 import { LzstockModule } from './lzstock/lzstock.module';
 
+/**
+ * アプリケーションのメインモジュールクラス
+ */
 @Module({
   imports: [LzstockModule,
     BullModule.forRoot({
@@ -14,6 +17,9 @@ import { LzstockModule } from './lzstock/lzstock.module';
         port: 6379
       }
     }),
+    /**
+     * バルクインサートキューの登録
+     */
     BullModule.registerQueue({
       name:'bulk-insert'
     }),
