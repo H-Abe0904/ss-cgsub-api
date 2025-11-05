@@ -15,6 +15,8 @@ import { Lzstock } from './lzstock/models/lzstock.entity';
 @Module({
   imports: [
     LzstockModule,
+
+    // TypeORMモジュールの初期化
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',
@@ -25,18 +27,22 @@ import { Lzstock } from './lzstock/models/lzstock.entity';
       entities: [Lzstock],
       synchronize: false,
     }),
+    LzstockModule,
+
+    // 環境変数モジュールの初期化
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    
+    // BullMQモジュールの初期化
     BullModule.forRoot({
       connection: {
         host:'localhost',
         port: 6379
       }
     }),
-    /**
-     * バルクインサートキューの登録
-     */
+    
+    // バルクインサートキューの登録
     BullModule.registerQueue({
       name:'bulk-insert'
     }),

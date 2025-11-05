@@ -17,8 +17,8 @@ export interface CsvImportJob {
 export class LzstockService {
 	constructor(
 		@InjectRepository(Lzstock)
-		@InjectQueue('bulk-insert')
 		private LzstockRepository: Repository<Lzstock>,
+		@InjectQueue('bulk-insert')
 		private bulkInsertQueue: Queue<CsvImportJob>) { }
 
 	/**
