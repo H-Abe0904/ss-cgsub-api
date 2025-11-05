@@ -11,7 +11,7 @@ import {
 /**
  * LZ在庫CSVデータのエンティティクラス
  */
-@Entity({ name: "lzstock" })
+@Entity({ name: "dbwrk_lz_stock" })
 export class Lzstock {
 	// 契約者ID
 	@Column({ type: 'varchar', length: 100 })
