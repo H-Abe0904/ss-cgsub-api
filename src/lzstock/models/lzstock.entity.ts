@@ -5,7 +5,8 @@ import {
 	Entity,
 	PrimaryGeneratedColumn,
 	ManyToOne,
-	JoinColumn
+	JoinColumn,
+	PrimaryColumn
 } from "typeorm";
 
 /**
@@ -14,7 +15,7 @@ import {
 @Entity({ name: "dbwrk_lz_stock" })
 export class Lzstock {
 	// 契約者ID
-	@Column({ type: 'varchar', length: 100 })
+	@PrimaryColumn({ type: 'varchar', length: 100 })
 	contractor_id: string;
 
 	// 契約者名

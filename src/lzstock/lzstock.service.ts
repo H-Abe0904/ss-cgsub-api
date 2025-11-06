@@ -35,29 +35,36 @@ export class LzstockService {
 		console.log(`Job added with ID: ${csvData.length}`);
 	}
 
-/**
- * LZ在庫データを保存する
- * @param data LZ在庫データDTO
- * @returns 保存されたLZ在庫エンティティ
- */
+	/**
+	 * LZ在庫データを保存する
+	 * @param data LZ在庫データDTO
+	 * @returns 保存されたLZ在庫エンティティ
+	 */
 	async saveLzStock(data: CreateLzStockDto): Promise<Lzstock> {
 		const lzstock = this.LzstockRepository.create({
-			contractor_id: 		data.contractor_id,
-			contractor_name: 	data.contractor_name,
-			shipper_id: 		data.shipper_id,
-			shipper_name: 		data.shipper_name,
-			warehouse_id: 		data.warehouse_id,
-			warehouse_name: 	data.warehouse_name,
-			block_id: 			data.block_id,
-			block_short_name: 	data.block_short_name,
-			location: 			data.location,
-			arrival_date: 		data.arrival_date,
-			item_id: 			data.item_id,
-			item_name: 			data.item_name,
-			item_search_name: 	data.item_search_name,
-			quality_div_id: 	data.quality_div_id,
+			contractor_id: data.contractor_id,
+			contractor_name: data.contractor_name,
+			shipper_id: data.shipper_id,
+			shipper_name: data.shipper_name,
+			warehouse_id: data.warehouse_id,
+			warehouse_name: data.warehouse_name,
+			block_id: data.block_id,
+			block_short_name: data.block_short_name,
+			location: data.location,
+			arrival_date: data.arrival_date,
+			item_id: data.item_id,
+			item_name: data.item_name,
+			item_search_name: data.item_search_name,
+			quality_div_id: data.quality_div_id,
 		});
 
 		return this.LzstockRepository.save(lzstock); // エンティティを保存して返す
+	}
+
+	/**
+	 * LZ在庫テーブルを全削除する(レコード挿入前に実行)
+	 */
+	async truncateStkTable(): Promise<void> {
+		await this.LzstockRepository.query('TRUNCATE TABLE dbwrk_lz_stock');
 	}
 }
