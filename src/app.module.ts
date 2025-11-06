@@ -21,9 +21,9 @@ import { Lzstock } from './lzstock/models/lzstock.entity';
       type: 'mysql',
       host: 'localhost',
       port: 3306,
-      username: 'Admin',
+      username: 'root',
       password: 'Cwcd45ure',
-      database: 'daijin_stock',
+      database: 'daijin_test',
       entities: [Lzstock],
       synchronize: false,
     }),
@@ -46,8 +46,9 @@ import { Lzstock } from './lzstock/models/lzstock.entity';
     BullModule.registerQueue({
       name:'bulk-insert'
     }),
+    LzstockModule
   ],
-  controllers: [AppController, LzstockController],
-  providers: [AppService, LzstockService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

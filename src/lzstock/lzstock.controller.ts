@@ -42,23 +42,26 @@ export class LzstockController {
         if (!file || file.mimetype !== 'text/csv') {
             throw new BadRequestException('CSV取込エラー: ファイルが提供されていないか、無効な形式です。');
         }
-        const stream = Readable.from(file.buffer.toString());
-        const results: CreateLzStockDto[] = [];
+        const stream = Readable.from(file.buffer.toString());   // バッファをストリームに変換
+        const results: CreateLzStockDto[] = [];                 // 解析結果を格納する配列
 
         const validateCsvData = (data: any): CreateLzStockDto => {
             // 必要なバリデーションを実装
             if (!data.requiredField) {
                 throw new BadRequestException('必須フィールドが不足しています');
             }
-            return data as CreateLzStockDto;
+            return data as CreateLzStockDto; // 適切な型にキャスト
         };
 
+        /**
+         * CSVデータの解析とバリデーション
+         */
         await new Promise<void>((resolve, reject) => {
             stream
-                .pipe(csvParser())
-                .on('data', (data: CreateLzStockDto) => results.push(data))
-                .on('end', () => resolve())
-                .on('error', (error) => reject(error));
+                .pipe(csvParser())                                          // CSVパーサーにパイプ接続
+                .on('data', (data: CreateLzStockDto) => results.push(data)) // データを配列に追加
+                .on('end', () => resolve())                                 // 解析完了時に解決
+                .on('error', (error) => reject(error));                     // エラー時に拒否
         });
 
         console.log(`Parsed ${results.length} rows.`);

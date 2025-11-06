@@ -6,6 +6,9 @@ import { Repository } from 'typeorm';
 import { Lzstock } from './models/lzstock.entity';
 import { CreateLzStockDto, UploadLzStockCSVDto } from './dto';
 
+/**
+ * CSVインポートジョブのインターフェース
+ */
 export interface CsvImportJob {
 	data: CreateLzStockDto[];
 }
@@ -55,6 +58,6 @@ export class LzstockService {
 			quality_div_id: 	data.quality_div_id,
 		});
 
-		return this.LzstockRepository.save(lzstock);
+		return this.LzstockRepository.save(lzstock); // エンティティを保存して返す
 	}
 }

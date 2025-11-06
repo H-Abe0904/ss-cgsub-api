@@ -9,15 +9,14 @@ import { Lzstock } from './models/lzstock.entity'; // ★ Lzstock エンティ�
 
 @Module({
   imports: [
-    // ★ 解決策: LzstockRepository を NestJS に提供するために必須 ★
-    TypeOrmModule.forFeature([Lzstock]), 
+    TypeOrmModule.forFeature([Lzstock]),  // ★ Lzstock エンティティをTypeORMモジュールに登録
     
-    // Queue (インデックス [1]) の解決策も併せて記述
+    //  バルクインサートキューの登録
     BullModule.registerQueue({
         name: 'bulk-insert', // サービスで使用しているキュー名
     }),
   ],
-  providers: [LzstockService], 
-  exports: [LzstockService],
+  providers: [LzstockService], // サービスをプロバイダーとして登録
+  exports: [LzstockService],   // 他のモジュールで使用できるようにエクスポート
 })
 export class LzstockModule {}
