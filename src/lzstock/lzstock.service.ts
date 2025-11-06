@@ -6,6 +6,10 @@ import { Repository } from 'typeorm';
 import { Lzstock } from './models/lzstock.entity';
 import { CreateLzStockDto, UploadLzStockCSVDto } from './dto';
 
+// 一時ファイルで実行
+const q = new Queue('bulk-insert', { connection: { host: '127.0.0.1', port: 6379 } });
+q.getJobCounts().then(console.log);
+
 /**
  * CSVインポートジョブのインターフェース
  */
@@ -40,25 +44,209 @@ export class LzstockService {
 	 * @param data LZ在庫データDTO
 	 * @returns 保存されたLZ在庫エンティティ
 	 */
-	async saveLzStock(data: CreateLzStockDto): Promise<Lzstock> {
-		const lzstock = this.LzstockRepository.create({
-			contractor_id: data.contractor_id,
-			contractor_name: data.contractor_name,
-			shipper_id: data.shipper_id,
-			shipper_name: data.shipper_name,
-			warehouse_id: data.warehouse_id,
-			warehouse_name: data.warehouse_name,
-			block_id: data.block_id,
-			block_short_name: data.block_short_name,
-			location: data.location,
-			arrival_date: data.arrival_date,
-			item_id: data.item_id,
-			item_name: data.item_name,
-			item_search_name: data.item_search_name,
-			quality_div_id: data.quality_div_id,
-		});
-
-		return this.LzstockRepository.save(lzstock); // エンティティを保存して返す
+	async saveLzStock(data: CreateLzStockDto): Promise<void> {
+		try {
+			// cast to any because entity properties use Japanese keys that don't match TypeScript type of Lzstock
+			const lzstock: Lzstock = this.LzstockRepository.create({
+				// 契約者ID
+				契約者ID: data.契約者ID,
+				// 契約者名
+				契約者名: data.契約者名,
+				// 荷主ID
+				荷主ID: data.荷主ID,
+				// 荷主名
+				荷主名: data.荷主名,
+				// 倉庫ID
+				倉庫ID: data.倉庫ID,
+				// 倉庫名
+				倉庫名: data.倉庫名,
+				// ブロックID
+				ブロックID: data.ブロックID,
+				// ブロック略称
+				ブロック略称: data.ブロック略称,
+				// ロケーション
+				ロケーション: data.ロケーション,
+				// 入荷日
+				入荷日: data.入荷日,
+				// 商品ID
+				商品ID: data.商品ID,
+				// 商品名
+				商品名: data.商品名,
+				// 検索名称
+				検索名称: data.検索名称,
+				// 品質区分ID
+				品質区分ID: data.品質区分ID,
+				// 品質区分
+				品質区分: data.品質区分,
+				// ロット
+				ロット: data.ロット,
+				// 有効期限
+				有効期限: data.有効期限,
+				// 在庫キー1
+				在庫キー1: data.在庫キー1,
+				// 在庫キー1名称
+				在庫キー1名称: data.在庫キー1名称,
+				// 在庫キー2
+				在庫キー2: data.在庫キー2,
+				// 在庫キー2名称
+				在庫キー2名称: data.在庫キー2名称,
+				// 在庫キー3
+				在庫キー3: data.在庫キー3,
+				// 在庫キー3名称
+				在庫キー3名称: data.在庫キー3名称,
+				// 在庫キー4
+				在庫キー4: data.在庫キー4,
+				// 在庫キー4名称
+				在庫キー4名称: data.在庫キー4名称,
+				// 在庫数(引当数含む)
+				在庫数_引当数含む: data.在庫数_引当数含む,
+				// 引当数
+				引当数: data.引当数,
+				// バーコード
+				バーコード: data.バーコード,
+				// バラ
+				バラ: data.バラ,
+				// ボール
+				ボール: data.ボール,
+				// ロケ引当条件
+				ロケ引当条件: data.ロケ引当条件,
+				// ロケ業務区分
+				ロケ業務区分: data.ロケ業務区分,
+				// 取置取引先ID
+				取置取引先ID: data.取置取引先ID,
+				// 取置取引先名
+				取置取引先名: data.取置取引先名,
+				// 梱包形態
+				梱包形態: data.梱包形態,
+				// 棚卸状況
+				棚卸状況: data.棚卸状況,
+				// 検索名称2
+				検索名称2: data.検索名称2,
+				// 仕入単価
+				仕入単価: data.仕入単価,
+				// 小売価格
+				小売価格: data.小売価格,
+				// 小売価格2
+				小売価格2: data.小売価格2,
+				// 小売価格3
+				小売価格3: data.小売価格3,
+				// 小売価格4
+				小売価格4: data.小売価格4,
+				// 大分類
+				大分類: data.大分類,
+				// 中分類
+				中分類: data.中分類,
+				// 小分類
+				小分類: data.小分類,
+				// ロット管理フラグ
+				ロット管理フラグ: data.ロット管理フラグ,
+				// 有効期限区分
+				有効期限区分: data.有効期限区分,
+				// 入荷日管理フラグ
+				入荷日管理フラグ: data.入荷日管理フラグ,
+				// 温度帯区分
+				温度帯区分: data.温度帯区分,
+				// セット構成区分
+				セット構成区分: data.セット構成区分,
+				// 在庫区分
+				在庫区分: data.在庫区分,
+				// 引当不可日数
+				引当不可日数: data.引当不可日数,
+				// 入荷期限日数
+				入荷期限日数: data.入荷期限日数,
+				// 商品予備項目001
+				商品予備項目001: data.商品予備項目001,
+				// 商品予備項目002
+				商品予備項目002: data.商品予備項目002,
+				// 商品予備項目003
+				商品予備項目003: data.商品予備項目003,
+				// 商品予備項目004
+				商品予備項目004: data.商品予備項目004,
+				// 商品予備項目005
+				商品予備項目005: data.商品予備項目005,
+				// 商品予備項目006
+				商品予備項目006: data.商品予備項目006,
+				// 商品予備項目007
+				商品予備項目007: data.商品予備項目007,
+				// 商品予備項目008
+				商品予備項目008: data.商品予備項目008,
+				// 商品予備項目009
+				商品予備項目009: data.商品予備項目009,
+				// 商品予備項目010
+				商品予備項目010: data.商品予備項目010,
+				// 部門ID
+				部門ID: data.部門ID,
+				// 部門名
+				部門名: data.部門名,
+				// 画像URL
+				画像URL: data.画像URL,
+				// 英語名
+				英語名: data.英語名,
+				// 重量
+				重量: data.重量,
+				// シリアル登録フラグ
+				シリアル登録フラグ: data.シリアル登録フラグ,
+				// HT検品対象除外フラグ
+				HT検品対象除外フラグ: data.HT検品対象除外フラグ,
+				// 納品書出力対象除外ファイル
+				納品書出力対象除外ファイル: data.納品書出力対象除外ファイル,
+				// 発注点管理除外フラグ
+				発注点管理除外フラグ: data.発注点管理除外フラグ,
+				// 最終入荷日
+				最終入荷日: data.最終入荷日,
+				// 最終出荷日
+				最終出荷日: data.最終出荷日,
+				// 縦_SKU単位
+				縦_SKU単位: data.縦_SKU単位,
+				// 横_SKU単位
+				横_SKU単位: data.横_SKU単位,
+				// 高さ_SKU単位
+				高さ_SKU単位: data.高さ_SKU単位,
+				// 仕入単価_SKU単位
+				仕入単価_SKU単位: data.仕入単価_SKU単位,
+				// 小売価格_SKU単位
+				小売価格_SKU単位: data.小売価格_SKU単位,
+				// 小売価格2_SKU単位
+				小売価格2_SKU単位: data.小売価格2_SKU単位,
+				// 小売価格3_SKU単位
+				小売価格3_SKU単位: data.小売価格3_SKU単位,
+				// 小売価格4_SKU単位
+				小売価格4_SKU単位: data.小売価格4_SKU単位,
+				// 小売価格5_SKU単位
+				小売価格5_SKU単位: data.小売価格5_SKU単位,
+				// SKU予備項目001
+				SKU予備項目001: data.SKU予備項目001,
+				// SKU予備項目002
+				SKU予備項目002: data.SKU予備項目002,
+				// SKU予備項目003
+				SKU予備項目003: data.SKU予備項目003,
+				// SKU予備項目004
+				SKU予備項目004: data.SKU予備項目004,
+				// SKU予備項目005
+				SKU予備項目005: data.SKU予備項目005,
+				// SKU予備項目006
+				SKU予備項目006: data.SKU予備項目006,
+				// SKU予備項目007
+				SKU予備項目007: data.SKU予備項目007,
+				// SKU予備項目008
+				SKU予備項目008: data.SKU予備項目008,
+				// SKU予備項目009
+				SKU予備項目009: data.SKU予備項目009,
+				// SKU予備項目010
+				SKU予備項目010: data.SKU予備項目010,
+				// ブロックグループID
+				ブロックグループID: data.ブロックグループID,
+				// ブロックグループ名称
+				ブロックグループ名称: data.ブロックグループ名称,
+			});
+			// save the created entity and return it
+			const saved = await this.LzstockRepository.save(lzstock); // ← await が重要
+			console.log('saved id=', saved);
+			// return saved; // エンティティを保存して返す
+		} catch (error) {
+			console.error('Error saving Lzstock:', error);
+			throw error;
+		}
 	}
 
 	/**

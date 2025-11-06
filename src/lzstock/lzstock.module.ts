@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'; // ★ TypeORMのモジュー�
 import { BullModule } from '@nestjs/bullmq'; 
 import { LzstockController } from './lzstock.controller';
 import { LzstockService } from './lzstock.service';
+import { LzstockProcessor } from './lzstock.processor';
 import { Lzstock } from './models/lzstock.entity'; // ★ Lzstock エンティティをインポート
 
 @Module({
@@ -15,7 +16,7 @@ import { Lzstock } from './models/lzstock.entity'; // ★ Lzstock エンティ�
     }),
   ],
   controllers: [LzstockController], // コントローラーを登録
-  providers: [LzstockService], // サービスをプロバイダーとして登録
+  providers: [LzstockService,LzstockProcessor], // サービスをプロバイダーとして登録
   exports: [LzstockService],   // 他のモジュールで使用できるようにエクスポート
 })
 export class LzstockModule {}
