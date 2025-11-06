@@ -1,9 +1,7 @@
-// src/lzstock/lzstock.module.ts
-
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm'; // ★ TypeORMのモジュールをインポート
 import { BullModule } from '@nestjs/bullmq'; 
-
+import { LzstockController } from './lzstock.controller';
 import { LzstockService } from './lzstock.service';
 import { Lzstock } from './models/lzstock.entity'; // ★ Lzstock エンティティをインポート
 
@@ -16,6 +14,7 @@ import { Lzstock } from './models/lzstock.entity'; // ★ Lzstock エンティ�
         name: 'bulk-insert', // サービスで使用しているキュー名
     }),
   ],
+  controllers: [LzstockController], // コントローラーを登録
   providers: [LzstockService], // サービスをプロバイダーとして登録
   exports: [LzstockService],   // 他のモジュールで使用できるようにエクスポート
 })
