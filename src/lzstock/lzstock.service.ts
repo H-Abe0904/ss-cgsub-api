@@ -1,13 +1,40 @@
+import * as fs from 'fs';
+import csv from 'csv-parser';
 import { InjectQueue } from '@nestjs/bullmq';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Queue } from 'bullmq';
 import { Repository } from 'typeorm';
 import { Lzstock } from './models/lzstock.entity';
 import { CreateLzStockDto, UploadLzStockCSVDto } from './dto';
+import { Readable } from 'stream';
+import { buffer } from 'stream/consumers';
 
 // 一時ファイルで実行
 const q = new Queue('bulk-insert', { connection: { host: '127.0.0.1', port: 6379 } });
+const CSV_HEADERS = [
+	'契約者ID', '契約者名', '荷主ID', '荷主名', '倉庫ID', '倉庫名', 'ブロックID',
+	'ブロック略称', 'ロケーション', '入荷日', '商品ID', '商品名', '検索名称',
+	'品質区分ID', '品質区分', 'ロット', '有効期限', '在庫キー1', '在庫キー1名称',
+	'在庫キー2', '在庫キー2名称', '在庫キー3', '在庫キー3名称', '在庫キー4',
+	'在庫キー4名称', '在庫数_引当数含む', '引当数', 'バーコード', 'バラ', 'ボール',
+	'ロケ引当条件', 'ロケ業務区分', '取置取引先ID', '取置取引先名', '梱包形態',
+	'棚卸状況', '検索名称2', '仕入単価', '小売価格', '小売価格2', '小売価格3',
+	'小売価格4', '大分類', '中分類', '小分類', 'ロット管理フラグ', '有効期限区分',
+	'入荷日管理フラグ', '温度帯区分', 'セット構成区分', '在庫区分', '引当不可日数',
+	'入荷期限日数', '商品予備項目001', '商品予備項目002', '商品予備項目003',
+	'商品予備項目004', '商品予備項目005', '商品予備項目006', '商品予備項目007',
+	'商品予備項目008', '商品予備項目009', '商品予備項目010', '部門ID', '部門名',
+	'画像URL', '英語名', '重量', 'シリアル登録フラグ', 'HT検品対象除外フラグ',
+	'納品書出力対象除外ファイル', '発注点管理除外フラグ', '最終入荷日', '最終出荷日',
+	'縦_SKU単位', '横_SKU単位', '高さ_SKU単位', '仕入単価_SKU単位', '小売価格_SKU単位',
+	'小売価格2_SKU単位', '小売価格3_SKU単位', '小売価格4_SKU単位', '小売価格5_SKU単位',
+	'SKU予備項目001', 'SKU予備項目002', 'SKU予備項目003', 'SKU予備項目004',
+	'SKU予備項目005', 'SKU予備項目006', 'SKU予備項目007', 'SKU予備項目008',
+	'SKU予備項目009', 'SKU予備項目010', 'ブロックグループID', 'ブロックグループ名称'
+];
+const BATCH_SIZE = 1000;
+const logger = new Logger('LZStockService');
 q.getJobCounts().then(console.log);
 
 /**
@@ -29,6 +56,33 @@ export class LzstockService {
 		private bulkInsertQueue: Queue<CsvImportJob>) { }
 
 	/**
+	 * CSVの値をDTOに合わせて変換する関数
+	 * @param data CSVから読み込んだKey-Valueデータ
+	 * @returns 型変換済みDTOオブジェクト
+	 */
+	private transformRecord(data: any): CreateLzStockDto {
+		const transformed: any = { ...data };
+
+		transformed['在庫数_引当数含む'] = parseInt(data['在庫数_引当数含む']) || 0;
+		transformed['引当数'] = parseInt(data['引当数']) || 0;
+
+		const dateFields = ['入荷日', '有効期限', '最終入荷日', '最終出荷日'];
+		dateFields.forEach(field => {
+			if (transformed[field] === '') {
+				transformed[field] = null;
+			}
+		});
+
+		Object.keys(transformed).forEach(key => {
+			if (transformed[key] === '') {
+				transformed[key] === null;
+			}
+		});
+
+		return transformed as CreateLzStockDto;
+	}
+
+	/**
 	 *  LZ在庫CSVの一括登録ジョブを追加する
 	 * @param csvData LZ在庫(CSVデータ)の配列 
 	 */
@@ -37,6 +91,73 @@ export class LzstockService {
 			data: csvData
 		});
 		console.log(`Job added with ID: ${csvData.length}`);
+	}
+
+	/**
+	 * キュー内のすべてのジョブデータを削除する
+	 */
+	async clearAllJobs(): Promise<void> {
+		try {
+			await this.bulkInsertQueue.obliterate();
+		} catch (error) {
+			if (error.message?.includes('Cannot obliterate queue with active jobs')) {
+				console.warn('キューにアクティブなジョブが存在するため、ジョブデータの削除に失敗しました。');
+				return;
+			}
+			console.log('キュー内のすべてのジョブデータを削除しました。');
+		}
+	}
+
+	/**
+	 * 	LZ在庫CSVデータを一括挿入する
+	 * @param data	 LZ在庫CSVデータの配列 
+	 */
+	async bulkInsertLzStock(filePath: string): Promise<number> {
+		let maxRecords = 0;
+		let batch: CreateLzStockDto[] = [];
+
+		return new Promise((resolve, reject) => {
+			const fileStream = fs.createReadStream(filePath);
+
+			const csvStream: Readable = fileStream
+				.pipe(csv({
+					headers: CSV_HEADERS,
+					skipLines: 1,
+				}));
+
+			csvStream.on('data', async (data: any) => {
+				try {
+					const transformedRecord = this.transformRecord(data)
+
+					const record = this.LzstockRepository.create(transformedRecord);
+					batch.push(record);
+					maxRecords++;
+
+					if (batch.length >= BATCH_SIZE) {
+						csvStream.pause();
+						await this.LzstockRepository.insert(batch);
+						batch = []
+
+						csvStream.resume();
+					}
+				} catch (err) {
+					logger.error(`CSV処理エラー: ${maxRecords + 1}: ${err.message}`);
+					csvStream.destroy(err);
+
+				}
+			})
+			.on('end', async()  => {
+				if(batch.length > 0) {
+					await this.LzstockRepository.insert(batch);
+				}
+				logger.log(`バッチインサート(LZ在庫)完了 件数: ${maxRecords}`);
+				resolve(maxRecords);
+			})
+		.on('error', (error) => {
+			logger.error(`ファイル読出エラー: ${error.message}`);
+			reject(error);
+		})}
+		)
 	}
 
 	/**
@@ -240,7 +361,7 @@ export class LzstockService {
 				ブロックグループ名称: data.ブロックグループ名称,
 			});
 			// save the created entity and return it
-			const saved = await this.LzstockRepository.save(lzstock); // ← await が重要
+			const saved = await this.LzstockRepository.insert(lzstock); // ← await が重要
 			console.log('saved id=', saved);
 			// return saved; // エンティティを保存して返す
 		} catch (error) {

@@ -35,7 +35,7 @@ export class Lzstock {
     倉庫ID: string;
 
     // 倉庫名
-    @Column({ type: 'varchar', length: 4, nullable: true })
+    @Column({ type: 'varchar', length: 100, nullable: true })
     倉庫名: string;
 
     // ブロックID
