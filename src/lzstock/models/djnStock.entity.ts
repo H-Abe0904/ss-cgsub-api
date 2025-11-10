@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, Index } from 'typeorm';
+import { JoinTable } from 'typeorm/browser';
 
 /**
  * ERP在庫管理データ エンティティ定義
@@ -16,6 +17,9 @@ export class DjnStock {
     CD_Warehouse: string;
 
     // 商品コード
+	@JoinTable({
+		name: 'dbwrk_daijin'
+	})
     @Column({ type: 'varchar', length: 13, nullable: true, comment: '商品コード' })
     CD_Product: string;
 

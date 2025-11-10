@@ -8,11 +8,7 @@ import { Lzstock } from './models/lzstock.entity'; // ★ Lzstock エンティ�
 @Module({
   imports: [
     TypeOrmModule.forFeature([Lzstock]),  // ★ Lzstock エンティティをTypeORMモジュールに登録
-    
-    //  バルクインサートキューの登録
-    BullModule.registerQueue({
-        name: 'bulk-insert', // サービスで使用しているキュー名
-    }),
+  
   ],
   controllers: [LzstockController], // コントローラーを登録
   providers: [LzstockService,], // サービスをプロバイダーとして登録

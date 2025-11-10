@@ -115,13 +115,11 @@ export class Lzstock {
     在庫キー4名称: string;
 
     // 在庫数(引当数含む)
-    // NOTE: DBのカラム型は'varchar'ですが、ここでは意味的に'number'型を使用します。
-    @Column({ name: '在庫数_引当数含む', type: 'varchar', length: 100, nullable: true })
+    @Column({ name: '在庫数_引当数含む', type: 'int', length: 100, nullable: true })
     在庫数_引当数含む: number;
 
     // 引当数
-    // NOTE: DBのカラム型は'varchar'ですが、ここでは意味的に'number'型を使用します。
-    @Column({ type: 'varchar', length: 100, nullable: true })
+    @Column({ type: 'int', length: 100, nullable: true })
     引当数: number;
 
     // バーコード
@@ -299,7 +297,7 @@ export class Lzstock {
     // 納品書出力対象除外ファイル (DBカラム名: 納品書出力対象除外ファイル, プロパティ名: 納品書出力対象除外フラグ)
     // NOTE: フィールド名に合わせ 'ファイル' を使いますが、意味的には 'フラグ' と考えられます。
     @Column({ type: 'varchar', length: 100, nullable: true })
-    納品書出力対象除外ファイル: string;
+    納品書出力対象除外フラグ: string;
 
     // 発注点管理除外フラグ
     @Column({ type: 'varchar', length: 100, nullable: true })

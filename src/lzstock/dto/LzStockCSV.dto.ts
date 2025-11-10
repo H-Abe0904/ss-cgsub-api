@@ -286,7 +286,7 @@ export class CreateLzStockDto {
 
     // 納品書出力対象除外ファイル (元のスキーマ名に修正)
     @IsString()
-    納品書出力対象除外ファイル: string;
+    納品書出力対象除外フラグ: string;
 
     // 発注点管理除外フラグ
     @IsString()
