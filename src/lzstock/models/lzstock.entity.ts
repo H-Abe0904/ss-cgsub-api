@@ -10,7 +10,7 @@ import {
 } from "typeorm";
 
 /**
- * LZ在庫CSVデータのエンティティクラス
+ * WMS在庫CSVデータのエンティティクラス
  */
 @Entity({ name: "dbwrk_lz_stock" })
 export class Lzstock {

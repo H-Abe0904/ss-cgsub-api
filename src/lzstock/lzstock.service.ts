@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as iconv from 'iconv-lite'
 import csv from 'csv-parser';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
@@ -11,7 +12,6 @@ import { Readable } from 'stream';
 import { buffer } from 'stream/consumers';
 
 // 一時ファイルで実行
-const q = new Queue('bulk-insert', { connection: { host: '127.0.0.1', port: 6379 } });
 const CSV_HEADERS = [
 	'契約者ID', '契約者名', '荷主ID', '荷主名', '倉庫ID', '倉庫名', 'ブロックID',
 	'ブロック略称', 'ロケーション', '入荷日', '商品ID', '商品名', '検索名称',
@@ -35,7 +35,6 @@ const CSV_HEADERS = [
 ];
 const BATCH_SIZE = 1000;
 const logger = new Logger('LZStockService');
-q.getJobCounts().then(console.log);
 
 /**
  * CSVインポートジョブのインターフェース
@@ -83,32 +82,6 @@ export class LzstockService {
 	}
 
 	/**
-	 *  LZ在庫CSVの一括登録ジョブを追加する
-	 * @param csvData LZ在庫(CSVデータ)の配列 
-	 */
-	public async addJob(csvData: CreateLzStockDto[]): Promise<void> {
-		await this.bulkInsertQueue.add('bulk-insert', {
-			data: csvData
-		});
-		console.log(`Job added with ID: ${csvData.length}`);
-	}
-
-	/**
-	 * キュー内のすべてのジョブデータを削除する
-	 */
-	async clearAllJobs(): Promise<void> {
-		try {
-			await this.bulkInsertQueue.obliterate();
-		} catch (error) {
-			if (error.message?.includes('Cannot obliterate queue with active jobs')) {
-				console.warn('キューにアクティブなジョブが存在するため、ジョブデータの削除に失敗しました。');
-				return;
-			}
-			console.log('キュー内のすべてのジョブデータを削除しました。');
-		}
-	}
-
-	/**
 	 * 	LZ在庫CSVデータを一括挿入する
 	 * @param data	 LZ在庫CSVデータの配列 
 	 */
@@ -120,6 +93,7 @@ export class LzstockService {
 			const fileStream = fs.createReadStream(filePath);
 
 			const csvStream: Readable = fileStream
+				.pipe(iconv.decodeStream('Shift-JIS'))
 				.pipe(csv({
 					headers: CSV_HEADERS,
 					skipLines: 1,
@@ -146,17 +120,18 @@ export class LzstockService {
 
 				}
 			})
-			.on('end', async()  => {
-				if(batch.length > 0) {
-					await this.LzstockRepository.insert(batch);
-				}
-				logger.log(`バッチインサート(LZ在庫)完了 件数: ${maxRecords}`);
-				resolve(maxRecords);
-			})
-		.on('error', (error) => {
-			logger.error(`ファイル読出エラー: ${error.message}`);
-			reject(error);
-		})}
+				.on('end', async () => {
+					if (batch.length > 0) {
+						await this.LzstockRepository.insert(batch);
+					}
+					logger.log(`バッチインサート(LZ在庫)完了 件数: ${maxRecords}`);
+					resolve(maxRecords);
+				})
+				.on('error', (error) => {
+					logger.error(`ファイル読出エラー: ${error.message}`);
+					reject(error);
+				})
+		}
 		)
 	}
 
