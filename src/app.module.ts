@@ -16,6 +16,7 @@ import { BlockMstModule } from './block-mst/block-mst.module';
 @Module({
   imports: [
     LzstockModule,
+    BlockMstModule,
 
     // TypeORMモジュールの初期化
     TypeOrmModule.forRoot({
