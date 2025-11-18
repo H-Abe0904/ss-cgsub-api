@@ -8,5 +8,5 @@ export class uploadBlockMstDTO {
 	@IsArray()
 	@ArrayNotEmpty()
 
-	data: BlockMasterDTO;
+	data: BlockMasterDTO[];
 }
