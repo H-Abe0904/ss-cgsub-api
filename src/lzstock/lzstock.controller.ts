@@ -63,7 +63,6 @@ export class LzstockController {
             throw new BadRequestException('ファイルが指定されていません');
         }
 
-        // const containerFilePath = file.path;
         try {
             // TRUNCATE処理
             await this.lzStockService.truncateStkTable()

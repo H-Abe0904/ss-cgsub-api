@@ -8,7 +8,7 @@ import { LzstockController } from './lzstock/lzstock.controller';
 import { LzstockService } from './lzstock/lzstock.service';
 import { LzstockModule } from './lzstock/lzstock.module';
 import { Lzstock } from './lzstock/models/lzstock.entity';
-import { BlockMstModule } from './block-mst/block-mst.module';
+import { BlockMstModule } from '../src/block-mst/block-mst.module';
 
 /**
  * アプリケーションのメインモジュールクラス

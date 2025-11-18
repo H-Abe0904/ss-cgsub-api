@@ -7,12 +7,13 @@ import csv from 'csv-parser';
 import { LzBlockMST } from './models';
 import { BlockMasterDTO, uploadBlockMstDTO } from './dto';
 import { Readable } from 'stream';
+import { error } from 'console';
 
 const CSV_HEADERS = [
 	'ブロック略称', 'ブロック名称', '在庫情報算出フラグ'
 ];
 
-const BATCH_SIZE:number = 1000;						//	バッチインサート時の単位
+const BATCH_SIZE: number = 1000;						//	バッチインサート時の単位
 const logger = new Logger('LZ_BlockMaster');
 
 /**
@@ -34,16 +35,21 @@ export class BlockMstService {
 	 * @param data CSVから読み込んだKey-Valueデータ
 	 * @returns 型変換済みのDTOオブジェクト
 	 */
-	private transformRecord(data:any):BlockMasterDTO {
+	private transformRecord(data: any): BlockMasterDTO {
 		const transformed: any = { ...data };
 
 		Object.keys(transformed).forEach(key => {
-			if(transformed[key] === '') {
+			if (transformed[key] === '') {
 				transformed[key] === null;
 			}
 		});
 		return transformed as BlockMasterDTO
 	}
+
+	async getAllBlock(): Promise<LzBlockMST[]>{
+
+	}
+
 
 	/**
 	 * ブロックマスタの一括インサート処理
@@ -66,15 +72,33 @@ export class BlockMstService {
 
 			csvStream.on('data', async (data: any) => {
 				try {
-					const record = this.LzBlockRepository.create(data);
+					const transformedRecord = this.transformRecord((data))
+					const record = this.LzBlockRepository.create(transformedRecord);
 					batch.push(record);
 					maxRecords++;
 
-					if(batch.length >= BATCH_SIZE) {
+					if (batch.length >= BATCH_SIZE) {
+						csvStream.pause();
+						await this.LzBlockRepository.insert(batch);
+						batch = [];
 
+						csvStream.resume;
 					}
-
+				} catch (err) {
+					logger.error(`CSV処理エラー: ${maxRecords + 1}: ${err.message}`);
+					csvStream.destroy(err);
 				}
+			})
+			.on('end', async () => {
+				if (batch.length > 0) {
+					await this.LzBlockRepository.insert(batch);
+				}
+				logger.log(`バッチインサート(LZ在庫)完了件数: ${maxRecords}`);
+				resolve(maxRecords);
+			})
+			.on('error', (error) => {
+				logger.error(`ファイル読出エラー: ${error.message}` );
+				reject(error);
 			})
 		})
 	}
