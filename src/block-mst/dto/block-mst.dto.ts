@@ -11,5 +11,5 @@ export class BlockMasterDTO {
 	ブロック名称: string;
 
 	@IsBoolean()
-	在庫情報算出対象フラグ: boolean;
+	在庫情報算出対象フラグ: number;
 }
