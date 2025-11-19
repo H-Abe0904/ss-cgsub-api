@@ -85,7 +85,7 @@ export class BlockMstService {
 						await this.LzBlockRepository.insert(batch);
 						batch = [];
 
-						csvStream.resume;
+						csvStream.resume();
 					}
 				} catch (err) {
 					logger.error(`CSV処理エラー: ${maxRecords + 1}: ${err.message}`);
