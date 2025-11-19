@@ -115,11 +115,11 @@ export class Lzstock {
     在庫キー4名称: string;
 
     // 在庫数(引当数含む)
-    @Column({ name: '在庫数_引当数含む', type: 'int', length: 100, nullable: true })
+    @Column({ name: '在庫数_引当数含む', type: 'int', nullable: true })
     在庫数_引当数含む: number;
 
     // 引当数
-    @Column({ type: 'int', length: 100, nullable: true })
+    @Column({ type: 'int', nullable: true })
     引当数: number;
 
     // バーコード

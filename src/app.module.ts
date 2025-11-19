@@ -9,6 +9,7 @@ import { LzstockService } from './lzstock/lzstock.service';
 import { LzstockModule } from './lzstock/lzstock.module';
 import { Lzstock } from './lzstock/models/lzstock.entity';
 import { BlockMstModule } from '../src/block-mst/block-mst.module';
+import { LzBlockMST } from './block-mst/models';
 
 /**
  * アプリケーションのメインモジュールクラス
@@ -26,30 +27,18 @@ import { BlockMstModule } from '../src/block-mst/block-mst.module';
       username: 'root',
       password: 'Cwcd45ure',
       database: 'daijin_test',
-      entities: [Lzstock],
+      entities: [Lzstock,LzBlockMST],
       synchronize: false,
     }),
-    LzstockModule,
+    // LzstockModule,BlockMstModule,
 
     // 環境変数モジュールの初期化
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    
-    // BullMQモジュールの初期化
-    BullModule.forRoot({
-      connection: {
-        host:'localhost',
-        port: 6379
-      }
-    }),
-    
-    // バルクインサートキューの登録
-    BullModule.registerQueue({
-      name:'bulk-insert'
-    }),
-    LzstockModule,
-    BlockMstModule
+
+    // LzstockModule,
+    // BlockMstModule
   ],
   controllers: [AppController],
   providers: [AppService],
