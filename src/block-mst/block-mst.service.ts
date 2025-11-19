@@ -25,6 +25,9 @@ export interface CsvImportJob {
 
 @Injectable()
 export class BlockMstService {
+    find(): BlockMasterDTO[] | PromiseLike<BlockMasterDTO[]> {
+        throw new Error('Method not implemented.');
+    }
 	constructor(
 		@InjectRepository(LzBlockMST)
 		private LzBlockRepository: Repository<LzBlockMST>,
@@ -46,9 +49,9 @@ export class BlockMstService {
 		return transformed as BlockMasterDTO
 	}
 
-	async getAllBlock(): Promise<LzBlockMST[]>{
-
-	}
+    async getAllBlock(): Promise<BlockMasterDTO[]> {
+        return this.LzBlockRepository.find()
+    }
 
 
 	/**

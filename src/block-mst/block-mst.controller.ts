@@ -22,6 +22,7 @@ import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import { count, error } from 'console';
 import { BlockMstService } from './block-mst.service';
+import { BlockMasterDTO } from './dto';
 
 const logger = new Logger('BlockMstController');
 
@@ -29,6 +30,18 @@ const logger = new Logger('BlockMstController');
 @ApiTags('block-mst')
 export class BlockMstController {
     constructor(private readonly blockMstService: BlockMstService) { }
+
+    /**
+     * ブロックマスタ全取得
+     * @returns フラグの状態に関係なくデータ取得
+     */
+    @Get('getall')
+    @HttpCode(HttpStatus.OK)
+    async getAllBlockMaster(): Promise<BlockMasterDTO[]>{
+        return this.blockMstService.getAllBlock();
+    }
+
+
 
     /**
      * 

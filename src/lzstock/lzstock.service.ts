@@ -51,8 +51,8 @@ export class LzstockService {
 	constructor(
 		@InjectRepository(Lzstock)
 		private LzstockRepository: Repository<Lzstock>,
-		@InjectQueue('bulk-insert')
-		private bulkInsertQueue: Queue<CsvImportJob>) { }
+	) { }
+		
 
 	/**
 	 * CSVの値をDTOに合わせて変換する関数
