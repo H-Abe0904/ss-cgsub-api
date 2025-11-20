@@ -54,6 +54,10 @@ export class BlockMstService {
 		return transformed as BlockMasterDTO
 	}
 
+	/**
+	 * 全ブロックマスタ取得
+	 * @returns 
+	 */
     async getAllBlock(): Promise<BlockMasterDTO[]> {
         return this.LzBlockRepository.find()
     }
