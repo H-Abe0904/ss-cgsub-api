@@ -10,7 +10,7 @@ import { Readable } from 'stream';
 import { error } from 'console';
 
 const CSV_HEADERS = [
-	'ブロック略称', 'ブロック名称', '在庫情報算出対象フラグ'
+	'ブロック略称', 'ブロック名称', '在庫情報提供対象'
 ];
 
 const BATCH_SIZE: number = 1000;						//	バッチインサート時の単位
