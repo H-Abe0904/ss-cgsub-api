@@ -10,7 +10,7 @@ import { Readable } from 'stream';
 import { error } from 'console';
 
 const CSV_HEADERS = [
-	'ブロック略称', 'ブロック名称', '在庫情報算出フラグ'
+	'ブロック略称', 'ブロック名称', '在庫情報提供対象'
 ];
 
 const BATCH_SIZE: number = 1000;						//	バッチインサート時の単位
@@ -41,7 +41,7 @@ export class BlockMstService {
 	private transformRecord(data: any): BlockMasterDTO {
 		const transformed: any = { ...data };
 
-		transformed['在庫情報算出対象フラグ'] = data['在庫情報算出対象フラグ'] === '1';
+		transformed['在庫情報提供対象'] = data['在庫情報提供対象'] === '1';
 
 		Object.keys(transformed).forEach(key => {
 			if (transformed[key] === '') {
