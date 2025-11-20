@@ -15,7 +15,7 @@ export class LzBlockMST {
 	ブロック名称: string;
 
 	//	得意先に提供する在庫データのブロックをコントロールするフラグ
-	@Column({type: 'int', nullable: false})
+	@Column({type: 'boolean', nullable: false})
 	在庫情報算出対象フラグ: boolean;
 
 }
