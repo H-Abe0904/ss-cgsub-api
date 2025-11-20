@@ -10,6 +10,6 @@ export class BlockMasterDTO {
 	@IsString()
 	ブロック名称: string;
 
-	@IsNumber()
+	@IsBoolean()
 	在庫情報算出対象フラグ: boolean;
 }

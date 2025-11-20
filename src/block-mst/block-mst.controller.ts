@@ -20,7 +20,6 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
-import { count, error } from 'console';
 import { BlockMstService } from './block-mst.service';
 import { BlockMasterDTO } from './dto';
 
@@ -69,16 +68,17 @@ export class BlockMstController {
             throw new BadRequestException('ファイルが指定されていません');
         }
 
+        let insertedCount = 0;
         try {
             await this.blockMstService.truncateBlock();
             Logger.log('ブロックマスタを削除しました');
 
-            await this.blockMstService.bulkInsertBlockMST(fullPath);
+            insertedCount = await this.blockMstService.bulkInsertBlockMST(fullPath);
             Logger.log('LZ在庫データ取込中');
 
             return {
                 message: '在庫データ取込完了',
-                maxRecordsInserted: count
+                maxRecordsInserted: insertedCount
             };
         } catch (err) {
             logger.error(`CSV取込エラー: ${err.message}`, err.blockMaster);
