@@ -41,7 +41,7 @@ export class BlockMstService {
 	private transformRecord(data: any): BlockMasterDTO {
 		const transformed: any = { ...data };
 
-		transformed['在庫情報算出対象フラグ'] = parseInt(data['在庫情報算出対象フラグ']) || 0;
+		transformed['在庫情報提供対象'] = parseInt(data['在庫情報提供対象']) || 0;
 
 		Object.keys(transformed).forEach(key => {
 			if (transformed[key] === '') {
