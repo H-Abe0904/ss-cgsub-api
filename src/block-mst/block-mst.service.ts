@@ -39,9 +39,12 @@ export class BlockMstService {
 	 * @returns 型変換済みのDTOオブジェクト
 	 */
 	private transformRecord(data: any): BlockMasterDTO {
-		const transformed: any = { ...data };
-
-		transformed['在庫情報提供対象'] = data['在庫情報提供対象'] === '1';
+		const transformed: any = {
+			ブロック略称: data['ブロック略称'],
+			ブロック名称: data['ブロック名称'],
+			// CSVのヘッダー名 '在庫情報提供対象' から DTOのプロパティ名 '在庫情報算出対象フラグ' へマッピング
+			在庫情報算出対象フラグ: data['在庫情報提供対象'] === '1'
+		};
 
 		Object.keys(transformed).forEach(key => {
 			if (transformed[key] === '') {
