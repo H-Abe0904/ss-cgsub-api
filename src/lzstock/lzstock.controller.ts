@@ -21,10 +21,12 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { LzstockService } from './lzstock.service';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { CreateLzStockDto, UploadLzStockCSVDto } from './dto';
+import { available_stockDTO, CreateLzStockDto, UploadLzStockCSVDto } from './dto';
 import { count, error } from 'console';
+import { availableStock } from './models';
 
 const logger = new Logger('LZStockController');
+
 /**
  * LZ在庫データを管理するコントローラクラス
  */
@@ -89,6 +91,13 @@ export class LzstockController {
             }
         }
     }
+
+    @Get()
+    @ApiOperation({ summary: 'GET Available Stock'})
+    @HttpCode(HttpStatus.OK)
+async getAvailableStock(): Promise<void> {
+    await this.lzStockService.getAvailableStk()
+}
 
     /**
      * LZ在庫テーブル全削除する

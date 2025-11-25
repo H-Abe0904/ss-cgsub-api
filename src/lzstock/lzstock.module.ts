@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm'; // ★ TypeORMのモジュールをインポート
-import { BullModule } from '@nestjs/bullmq'; 
 import { LzstockController } from './lzstock.controller';
 import { LzstockService } from './lzstock.service';
-import { Lzstock } from './models/lzstock.entity'; // ★ Lzstock エンティティをインポート
+import { Lzstock, availableStock } from './models'; // ★ Lzstock エンティティをインポート
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Lzstock]),  // ★ Lzstock エンティティをTypeORMモジュールに登録
+    TypeOrmModule.forFeature([Lzstock, availableStock]),  // ★ Lzstock エンティティをTypeORMモジュールに登録
   
   ],
   controllers: [LzstockController], // コントローラーを登録

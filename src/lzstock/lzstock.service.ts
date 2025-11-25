@@ -6,8 +6,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Queue } from 'bullmq';
 import { Repository } from 'typeorm';
-import { Lzstock } from './models/lzstock.entity';
-import { CreateLzStockDto, UploadLzStockCSVDto } from './dto';
+import { Lzstock, availableStock } from './models';
+import { 
+	CreateLzStockDto, 
+	UploadLzStockCSVDto, 
+	available_stockDTO 
+} from './dto';
 import { Readable } from 'stream';
 import { buffer } from 'stream/consumers';
 
@@ -51,6 +55,7 @@ export class LzstockService {
 	constructor(
 		@InjectRepository(Lzstock)
 		private LzstockRepository: Repository<Lzstock>,
+		private stockRepository: Repository<availableStock>
 	) { }
 		
 
@@ -343,6 +348,10 @@ export class LzstockService {
 			console.error('Error saving Lzstock:', error);
 			throw error;
 		}
+	}
+
+	async getAvailableStk(): Promise<available_stockDTO[]>{
+		return await this.stockRepository.find()
 	}
 
 	/**
