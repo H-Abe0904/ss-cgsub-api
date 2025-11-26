@@ -59,7 +59,7 @@ export class BlockMstService {
 	 * @returns 
 	 */
     async getAllBlock(): Promise<BlockMasterDTO[]> {
-        return this.LzBlockRepository.find()
+        return await this.LzBlockRepository.find()
     }
 
 

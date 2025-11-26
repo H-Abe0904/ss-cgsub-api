@@ -1,0 +1,8 @@
+{
+    "jsc": {
+        "transform": {
+            "decoratorMetadata": true,
+            "legacyDecorator": true
+        }
+    }
+}

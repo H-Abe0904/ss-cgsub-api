@@ -10,6 +10,7 @@ import { LzstockModule } from './lzstock/lzstock.module';
 import { Lzstock } from './lzstock/models/lzstock.entity';
 import { BlockMstModule } from '../src/block-mst/block-mst.module';
 import { LzBlockMST } from './block-mst/models';
+import { availableStock } from './lzstock/models';
 
 /**
  * アプリケーションのメインモジュールクラス
@@ -18,6 +19,7 @@ import { LzBlockMST } from './block-mst/models';
   imports: [
     LzstockModule,
     BlockMstModule,
+    availableStock,
 
     // TypeORMモジュールの初期化
     TypeOrmModule.forRoot({
@@ -27,7 +29,7 @@ import { LzBlockMST } from './block-mst/models';
       username: 'root',
       password: 'Cwcd45ure',
       database: 'daijin_test',
-      entities: [Lzstock,LzBlockMST],
+      entities: [Lzstock,LzBlockMST,availableStock],
       synchronize: false,
     }),
     // LzstockModule,BlockMstModule,

@@ -82,22 +82,22 @@ export class LzstockController {
         } catch (err) {
             logger.error(`CSV取込エラー: ${err.message}`, err.stock);
             throw new BadRequestException(`データ処理エラー: ${err.message}`);
-        }finally{
-            try{
+        } finally {
+            try {
                 fs.unlinkSync(fullPath);
                 logger.log(`取込元ファイルを削除しました: ${fullPath}`);
-            }catch(unlinkErr){
+            } catch (unlinkErr) {
                 logger.error(`取込元フォルダの削除に失敗しました: ${fullPath}: ${unlinkErr.message}`);
             }
         }
     }
 
-    @Get()
-    @ApiOperation({ summary: 'GET Available Stock'})
+    @Get('available_stock')
+    @ApiOperation({ summary: 'GET Available Stock' })
     @HttpCode(HttpStatus.OK)
-async getAvailableStock(): Promise<void> {
-    await this.lzStockService.getAvailableStk()
-}
+    async getAvailableStock(): Promise<available_stockDTO[]> {
+       return await this.lzStockService.getAvailableStk()
+    }
 
     /**
      * LZ在庫テーブル全削除する

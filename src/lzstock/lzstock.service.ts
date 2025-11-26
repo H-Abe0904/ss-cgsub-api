@@ -1,10 +1,8 @@
 import * as fs from 'fs';
 import * as iconv from 'iconv-lite'
 import csv from 'csv-parser';
-import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Queue } from 'bullmq';
 import { Repository } from 'typeorm';
 import { Lzstock, availableStock } from './models';
 import { 
@@ -55,7 +53,8 @@ export class LzstockService {
 	constructor(
 		@InjectRepository(Lzstock)
 		private LzstockRepository: Repository<Lzstock>,
-		private stockRepository: Repository<availableStock>
+		@InjectRepository(availableStock)
+		private AvailableStockRepository: Repository<availableStock>
 	) { }
 		
 
@@ -350,8 +349,12 @@ export class LzstockService {
 		}
 	}
 
+	/**
+	 * LZ有効在庫データ全件取得
+	 * @returns LZ有効在庫データ(全件)
+	 */
 	async getAvailableStk(): Promise<available_stockDTO[]>{
-		return await this.stockRepository.find()
+		return await this.AvailableStockRepository.find();
 	}
 
 	/**

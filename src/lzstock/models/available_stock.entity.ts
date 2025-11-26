@@ -1,9 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, Index } from 'typeorm';
+import { Entity, Column, Index, PrimaryColumn } from 'typeorm';
 
 @Entity('vrwrk_ec_stock')
 export class availableStock{
 
-    @Column({ type: 'varchar', length: 13, nullable: true, comment: 'バーコード' })
+    @PrimaryColumn({ type: 'varchar', length: 13, comment: 'バーコード' })
     バーコード: string;
     
     @Column({ type: 'varchar', length: 100, nullable: true, comment: '商品名' })

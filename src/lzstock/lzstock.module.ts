@@ -6,11 +6,12 @@ import { Lzstock, availableStock } from './models'; // ★ Lzstock エンティ�
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Lzstock, availableStock]),  // ★ Lzstock エンティティをTypeORMモジュールに登録
-  
+
+    TypeOrmModule.forFeature([Lzstock, availableStock]),    
+
   ],
-  controllers: [LzstockController], // コントローラーを登録
-  providers: [LzstockService,], // サービスをプロバイダーとして登録
+  controllers: [LzstockController], 
+  providers: [LzstockService], // サービスをプロバイダーとして登録
   exports: [LzstockService],   // 他のモジュールで使用できるようにエクスポート
 })
 export class LzstockModule {}
