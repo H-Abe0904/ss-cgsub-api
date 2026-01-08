@@ -4,11 +4,11 @@ import csv from 'csv-parser';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Lzstock, availableStock } from './models';
-import { 
-	CreateLzStockDto, 
-	UploadLzStockCSVDto, 
-	available_stockDTO 
+import { Lzstock, stockForCustomer } from './models';
+import {
+	CreateLzStockDto,
+	UploadLzStockCSVDto,
+	StockForCustomerDto
 } from './dto';
 import { Readable } from 'stream';
 import { buffer } from 'stream/consumers';
@@ -53,10 +53,10 @@ export class LzstockService {
 	constructor(
 		@InjectRepository(Lzstock)
 		private LzstockRepository: Repository<Lzstock>,
-		@InjectRepository(availableStock)
-		private AvailableStockRepository: Repository<availableStock>
+		@InjectRepository(stockForCustomer)
+		private AvailableStockRepository: Repository<stockForCustomer>
 	) { }
-		
+
 
 	/**
 	 * CSVの値をDTOに合わせて変換する関数
@@ -353,8 +353,20 @@ export class LzstockService {
 	 * LZ有効在庫データ全件取得
 	 * @returns LZ有効在庫データ(全件)
 	 */
-	async getAvailableStk(): Promise<available_stockDTO[]>{
-		return await this.AvailableStockRepository.find();
+	async getAvailableStk(): Promise<StockForCustomerDto[]> {
+		const entities = await this.AvailableStockRepository.find();
+
+		return entities.map(entity => {
+			return {
+				productCode: entity.商品コード,
+				reportProductName: entity.商品名_帳票,
+				makerName: entity.ﾒｰｶｰ名,
+				stockQuantity: entity.在庫数_引当数含む,
+				orderBacklog: entity.受注残数,
+				salesRemaining: entity.売上残数,
+				effectiveStock: entity.有効在庫数,
+			};
+		});
 	}
 
 	/**

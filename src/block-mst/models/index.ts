@@ -1,1 +1,1 @@
-export * from './blockMaster.entity'
+export * from './blockMaster.entity';

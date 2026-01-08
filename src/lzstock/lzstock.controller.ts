@@ -21,9 +21,9 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { LzstockService } from './lzstock.service';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { available_stockDTO, CreateLzStockDto, UploadLzStockCSVDto } from './dto';
+import { StockForCustomerDto, CreateLzStockDto, UploadLzStockCSVDto } from './dto';
 import { count, error } from 'console';
-import { availableStock } from './models';
+import { stockForCustomer } from './models';
 
 const logger = new Logger('LZStockController');
 
@@ -95,7 +95,7 @@ export class LzstockController {
     @Get('available_stock')
     @ApiOperation({ summary: 'GET Available Stock' })
     @HttpCode(HttpStatus.OK)
-    async getAvailableStock(): Promise<available_stockDTO[]> {
+    async getAvailableStock(): Promise<StockForCustomerDto[]> {
        return await this.lzStockService.getAvailableStk()
     }
 
