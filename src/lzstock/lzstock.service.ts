@@ -362,7 +362,6 @@ export class LzstockService {
 				reportProductName: entity.商品名_帳票,
 				makerName: entity.ﾒｰｶｰ名,
 				stockQuantity: entity.在庫数_引当数含む,
-				orderBacklog: entity.受注残数,
 				salesRemaining: entity.売上残数,
 				effectiveStock: entity.有効在庫数,
 			};
