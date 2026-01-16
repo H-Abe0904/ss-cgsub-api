@@ -12,6 +12,7 @@ import {
 } from './dto';
 import { Readable } from 'stream';
 import { buffer } from 'stream/consumers';
+import { take } from 'rxjs';
 
 // 一時ファイルで実行
 const CSV_HEADERS = [
@@ -350,22 +351,42 @@ export class LzstockService {
 	}
 
 	/**
-	 * LZ有効在庫データ全件取得
+	 * LZ有効在庫データ全件取得(1000件ずつ分割)
 	 * @returns LZ有効在庫データ(全件)
 	 */
 	async getAvailableStk(): Promise<StockForCustomerDto[]> {
-		const entities = await this.AvailableStockRepository.find();
+		const allRecords: StockForCustomerDto[] = [];
+		const itemPerPage = 1000;
+		let skip = 0;
+		let hasMore = true;
 
-		return entities.map(entity => {
-			return {
+		while (hasMore) {
+			const entities = await this.AvailableStockRepository.find({
+				skip: skip,
+				take: itemPerPage,
+				order: { 商品コード: 'ASC' } as any
+			});
+
+			// 取得したデータをDTOに変換して追加
+			const records = entities.map(entity => ({
 				productCode: entity.商品コード,
 				reportProductName: entity.商品名_帳票,
 				makerName: entity.ﾒｰｶｰ名,
 				stockQuantity: entity.在庫数_引当数含む,
 				salesRemaining: entity.売上残数,
 				effectiveStock: entity.有効在庫数,
-			};
-		});
+			}));
+
+			allRecords.push(...records);
+
+			// 取得件数が itemPerPage より少なければ、次のデータはないと判断
+			if (entities.length < itemPerPage) {
+				hasMore = false;
+			} else {
+				skip += itemPerPage;
+			}
+		}
+		return allRecords;
 	}
 
 	/**
